@@ -1,0 +1,7 @@
+[db_host]
+ip_address
+[web]
+ip_address
+[wordpress:children]
+db_host
+web

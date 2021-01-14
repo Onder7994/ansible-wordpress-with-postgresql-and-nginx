@@ -1,0 +1,40 @@
+---
+- name: Add postgresql-11 repo
+  yum:
+    name: https://yum.postgresql.org/11/redhat/rhel-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    state: present
+- name: Install postgresql-11
+  yum:
+    name:
+      - postgresql11-server
+      - postgresql11
+      - python-psycopg2
+- name: Init postgres db
+  shell: /usr/pgsql-11/bin/postgresql-11-setup initdb
+  ignore_errors: yes
+
+- name: Copy postgresql.conf
+  template:
+    src: postgresql.conf.j2
+    dest: /var/lib/pgsql/11/data/postgresql.conf
+- name: Copy pg_hba.conf
+  template:
+    src: pg_hba.conf.j2
+    dest: /var/lib/pgsql/11/data/pg_hba.conf
+    backup: yes
+  #notify: restart postgres
+- name: Restart postgresql
+  shell: systemctl restart postgresql-11; systemctl enable postgresql-11
+- name: Create wordpress db
+  postgresql_db:
+    name: "{{ wordpress_db_name }}"
+- name: Create wordpress db user
+  postgresql_user:
+    name: "{{ wordpress_db_user }}"
+    password: "{{ wordpress_db_password }}"
+- name: Grant privileges
+  postgresql_privs:
+    db: "{{ wordpress_db_name }}"
+    role: "{{ wordpress_db_user }}"
+    objs: ALL_IN_SCHEMA
+    privs: SELECT,INSERT,UPDATE,DELETE
