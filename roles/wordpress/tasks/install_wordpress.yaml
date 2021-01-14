@@ -82,7 +82,7 @@
     - { src: "{{ root_directory }}/wp-content/pg4wp/db.php", dest: "{{ root_directory }}/wp-content/db.php"}
 - name: Remove postgresql-for-wordpress directory
   file:
-    path: "{{ root_directory }}/wp-content/postgresql-for-wordpress"
+    path: "{{ root_directory }}/postgresql-for-wordpress"
     state: absent
 - name: Copy wp-config.php template
   template:
