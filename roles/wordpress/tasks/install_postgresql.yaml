@@ -28,13 +28,16 @@
 - name: Create wordpress db
   postgresql_db:
     name: "{{ wordpress_db_name }}"
+  tags: create_db
 - name: Create wordpress db user
   postgresql_user:
     name: "{{ wordpress_db_user }}"
     password: "{{ wordpress_db_password }}"
+  tags: create_user
 - name: Grant privileges
   postgresql_privs:
     db: "{{ wordpress_db_name }}"
     role: "{{ wordpress_db_user }}"
     objs: ALL_IN_SCHEMA
     privs: SELECT,INSERT,UPDATE,DELETE
+  tags: grant
