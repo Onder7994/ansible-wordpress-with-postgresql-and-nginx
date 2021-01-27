@@ -48,7 +48,7 @@
        dest: "{{ item.dest }}"
       loop:
        - {src: "php-fpm.conf.j2", dest: "/etc/php-fpm.conf"}
-       - {src: "wordpress.conf.j2", dest: "/etc/php-fpm.d/wordpress.conf"}
+       - {src: "wordpress.conf.j2", dest: "{{ general.pool_config_dir }}/wordpress.conf"}
     - name: Delete default pool config
       file:
        path: "/etc/php-fpm.d/www.conf"
