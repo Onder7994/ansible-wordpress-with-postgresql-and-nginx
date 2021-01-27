@@ -55,3 +55,4 @@
        state: absent
       notify: restart php-fpm
   when: inventory_hostname == "{{ wordpress_host }}"
+  tags: php-fpm
