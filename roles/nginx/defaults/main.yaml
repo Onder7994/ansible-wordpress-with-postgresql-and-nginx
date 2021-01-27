@@ -3,7 +3,7 @@ php_fpm:
   location: "phpfpm-status"
   fastcgi_pass: "127.0.0.1:9000"
 ssl:
-  usage: "yes"
+  usage: "no"
   enable_redirect: "yes"
   ssl_port: "443"
   ssl_certificate: "/etc/nginx/ssl"

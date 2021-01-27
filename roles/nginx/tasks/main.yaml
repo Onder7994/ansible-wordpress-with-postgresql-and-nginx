@@ -55,4 +55,5 @@
       when: ssl.usage == 'no'
       notify: restart nginx
   when: ansible_os_family == 'RedHat' and inventory_hostname == "{{ wordpress_host }}"
+  tags: nginx
 
