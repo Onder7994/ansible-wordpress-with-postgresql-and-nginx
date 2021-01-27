@@ -1,0 +1,14 @@
+ssl_session_cache {{ ssl.ssl_session_cache }};
+ssl_session_timeout {{ ssl.ssl_session_timeout }};
+ssl_prefer_server_ciphers       {{ ssl.ssl_prefer_server_ciphers }};
+ssl_protocols  {{ ssl.ssl_protocols }};
+ssl_ciphers    '{{ ssl.ssl_ciphers }}';
+#ssl_dhparam    /etc/nginx/ssl/dhparam.pem;
+# ssl_ecdh_curve secp521r1;
+
+ssl_buffer_size {{ ssl.ssl_buffer_size }};
+ssl_stapling {{ ssl.ssl_stapling }};
+resolver {{ ssl.resolver }};
+ssl_stapling_verify {{ ssl.ssl_stapling_verify }};
+
+add_header Strict-Transport-Security max-age=31536000;

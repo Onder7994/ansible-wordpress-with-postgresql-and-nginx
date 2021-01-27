@@ -2,4 +2,6 @@
   hosts: wordpress
   become: yes
   roles:
-   - wordpress
+    - ./roles/php-fpm
+    - ./roles/nginx
+    - ./roles/wordpress

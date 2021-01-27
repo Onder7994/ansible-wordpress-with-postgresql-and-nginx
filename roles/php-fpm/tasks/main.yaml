@@ -1,0 +1,57 @@
+- name: Install php-fpm
+  block:
+    - name: Install epel-release
+      yum:
+       name: epel-release
+    - name: Install remi-release
+      yum:
+       name: https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+       state: present
+    - name: "Add remi-{{ php_version}}"
+      yum_repository:
+       name: "remi-{{ php_version }}"
+       description: Remi's PHP RPM repository for Enterprise Linux $releasever - $basearch
+       mirrorlist: "http://rpms.remirepo.net/enterprise/$releasever/{{ php_version }}/mirror"
+       enabled: yes
+       gpgcheck: 1
+       gpgkey: http://rpms.remirepo.net/RPM-GPG-KEY-remi
+    - name: Install php packeges
+      yum:
+       name:
+        - php-fpm
+        - php-cli
+        - php-gd
+        - php-json
+        - php-mcrypt
+        - php-xml
+        - php-curl
+        - php-pgsql
+    - name: Set cgi.fix_pathinfo 0
+      lineinfile:
+       path: /etc/php.ini
+       regexp: "^cgi.fix_pathinfo=1"
+       line: cgi.fix_pathinfo=0
+    - name: Set upload file setting
+      lineinfile:
+       path: /etc/php.ini
+       regexp: "^{{ item.var }}"
+       line: "{{ item.value }}"
+      loop:
+       - {var: "upload_max_filesize", value: "upload_max_filesize = {{ php_ini.upload_max_filesize }}"}
+       - {var: "max_file_uploads", value: "max_file_uploads = {{ php_ini.max_file_uploads }}"}
+       - {var: "post_max_size", value: "post_max_size = {{ php_ini.post_max_size }}"}
+       - {var: "max_execution_time", value: "max_execution_time = {{ php_ini.max_execution_time }}"}
+       - {var: "max_input_time", value: "max_input_time = {{ php_ini.max_input_time }}"}
+    - name: Copy php-fpm configs
+      template:
+       src: "{{ item.src }}"
+       dest: "{{ item.dest }}"
+      loop:
+       - {src: "php-fpm.conf.j2", dest: "/etc/php-fpm.conf"}
+       - {src: "wordpress.conf.j2", dest: "/etc/php-fpm.d/wordpress.conf"}
+    - name: Delete default pool config
+      file:
+       path: "/etc/php-fpm.d/www.conf"
+       state: absent
+      notify: restart php-fpm
+  when: inventory_hostname == "{{ wordpress_host }}"

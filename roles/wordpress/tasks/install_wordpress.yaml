@@ -1,58 +1,13 @@
 ---
-- name: Install epel-release
-  yum:
-    name: epel-release
-- name: Install remi-release
-  yum:
-    name: https://rpms.remirepo.net/enterprise/remi-release-7.rpm
-    state: present
-- name: Add remi-php72
-  yum_repository:
-    name: remi-php72
-    description: Remi's PHP 7.2 RPM repository for Enterprise Linux $releasever - $basearch
-    mirrorlist: http://rpms.remirepo.net/enterprise/$releasever/php72/mirror
-    enabled: yes
-    gpgcheck: 1
-    gpgkey: http://rpms.remirepo.net/RPM-GPG-KEY-remi
-- name: Install requirement packeges
+- name: Install wget unzip git
   yum:
     name:
-     - php-fpm
-     - php-cli
-     - php-gd
-     - php-json
-     - php-mcrypt
-     - php-xml
-     - php-curl
-     - php-pgsql
-     - nginx
      - wget
      - unzip
      - git
 - name: Disable SELinux
   selinux:
     state: disabled
-- name: Copy nginx.conf
-  template:
-    src: nginx.conf.j2
-    dest: /etc/nginx/nginx.conf
-- name: Copy wordpress.conf
-  template:
-    src: wordpress.conf.j2
-    dest: /etc/nginx/conf.d/wordpress.conf
-- name: Set user and group to php-fpm
-  lineinfile:
-    path: /etc/php-fpm.d/www.conf
-    regexp: "^{{ item.var }}"
-    line: "{{ item.value }}"
-  loop:
-    - { var: "user = apache", value: "user = nginx" }
-    - { var: "group = apache", value: "group = nginx" }
-- name: Set cgi.fix_pathinfo 0
-  lineinfile:
-    path: /etc/php.ini
-    regexp: "^cgi.fix_pathinfo=1"
-    line: cgi.fix_pathinfo=0
 - name: Download wordpress
   get_url:
     url: https://wordpress.org/latest.tar.gz
@@ -88,9 +43,5 @@
   template:
     src: wp-config.php.j2
     dest: "{{ root_directory }}/wp-config.php"
-
-  notify: 
-    - restart nginx
-    - restart php-fpm
 
   

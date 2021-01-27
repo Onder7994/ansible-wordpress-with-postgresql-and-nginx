@@ -1,0 +1,58 @@
+---
+- name: Install and configure nginx
+  block:
+    - name: Add nginx repo
+      yum_repository:
+        name: nginx-stable
+        description: nginx-stable repository
+        baseurl: http://nginx.org/packages/centos/$releasever/$basearch/ 
+        enabled: yes
+        gpgcheck: 1
+        gpgkey: https://nginx.org/keys/nginx_signing.key
+    - name: Install nginx
+      yum:
+        name: nginx
+        state: latest
+    - name: Delete default config file
+      file:
+        path: /etc/nginx/conf.d/default.conf
+        state: absent
+      ignore_errors: yes
+    - name: Copy nginx config file
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+    - name: Create ssl directory
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+       - "{{ ssl.ssl_certificate }}"
+       - "{{ ssl.ssl_certificate_key }}" 
+      when: ssl.usage == 'yes'
+    - name: Copy ssl certificate
+      copy:
+       src: "{{ item.src }}"
+       dest: "{{ item.dest }}"
+      loop:
+       - {src: "{{ ssl.ssl_certificate_name }}", dest: "{{ ssl.ssl_certificate }}/{{ssl.ssl_certificate_name }}"}
+       - {src: "{{ ssl.ssl_certificate_key_name }}", dest: "{{ ssl.ssl_certificate_key }}/{{ ssl.ssl_certificate_key_name }}"}
+      when: ssl.usage == 'yes'
+    - name: Copy ssl config
+      template:
+        src: ssl.conf.j2
+        dest: "{{ ssl.ssl_conf_dir }}/ssl.conf"
+      when: ssl.usage == 'yes'
+    - name: Copy wordpress-ssl config
+      template:
+        src: wordpress-ssl.conf.j2
+        dest: /etc/nginx/conf.d/wordpress-ssl.conf
+      when: ssl.usage == 'yes'
+    - name: Copy wordpress config
+      template:
+        src: wordpress.conf.j2
+        dest: /etc/nginx/conf.d/wordpress.conf
+      when: ssl.usage == 'no'
+      notify: restart nginx
+  when: ansible_os_family == 'RedHat' and inventory_hostname == "{{ wordpress_host }}"
+

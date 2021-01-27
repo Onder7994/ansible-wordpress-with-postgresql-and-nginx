@@ -1,7 +1,6 @@
-[db_host]
-ip_address
-[web]
-ip_address
+[wordpress]
+ip
+[postgresql]
+ip
 [wordpress:children]
-db_host
-web
+postgresql

@@ -1,0 +1,36 @@
+include={{ general.pool_config_dir }}/*.conf
+
+[global]
+pid = /run/php-fpm/php-fpm.pid
+error_log = {{ general.error_log }}
+syslog.facility = {{ general.syslog_facility }}
+syslog.ident = {{ general.syslog_ident }}
+
+; Possible Values: alert, error, warning, notice, debug
+log_level = {{ general.log_level }}
+emergency_restart_threshold = {{ general.emergency_restart_threshold }}
+
+; Available Units: s(econds), m(inutes), h(ours), or d(ays)
+; Default Unit: seconds
+; Default Value: 0
+emergency_restart_interval = {{ general.emergency_restart_interval }}
+
+; Available units: s(econds), m(inutes), h(ours), or d(ays)
+; Default Unit: seconds
+; Default Value: 0
+process_control_timeout = {{ general.process_control_timeout }}
+
+process.max = {{ general.process_max }}
+process.priority = {{ general.process_priority }}
+
+daemonize = {{ general.daemonize }}
+
+rlimit_files = {{ general.rlimit_files }}
+;rlimit_core = {{ general.rlimit_core|default(0) }}
+
+events.mechanism = {{ general.events_mechanism }}
+
+; Available Units: s(econds), m(inutes), h(ours)
+; Default Unit: seconds
+; Default value: 10
+systemd_interval = {{ general.systemd_interval }}

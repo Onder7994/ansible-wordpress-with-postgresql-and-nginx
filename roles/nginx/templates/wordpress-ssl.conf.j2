@@ -1,0 +1,61 @@
+server {
+        listen {{ http_port }};
+{% if ssl.enable_redirect == 'yes' %}
+        return 301 https://$server_name$request_uri;
+{% endif %}
+}
+
+server {
+        listen {{ ssl.ssl_port }} ssl;
+        server_name {{ domain_name }};
+        root {{ root_dir }};
+        index index.php;
+        ssl_certificate {{ ssl.ssl_certificate }}/{{ ssl.ssl_certificate_name }};
+        ssl_certificate_key {{ ssl.ssl_certificate_key }}/{{ ssl.ssl_certificate_key_name }};
+
+        include {{ ssl.ssl_conf_dir }}/ssl.conf;
+
+        location = /favicon.ico {
+                log_not_found off;
+                access_log off;
+        }
+
+        location = /robots.txt {
+                allow all;
+                log_not_found off;
+                access_log off;
+        }
+
+        location / {
+                try_files $uri $uri/ /index.php?$args;
+        }
+
+        location ~ \.php$ {
+                include fastcgi_params;
+                fastcgi_intercept_errors on;
+                fastcgi_pass 127.0.0.1:9000;
+                fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        }
+
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+                expires max;
+                log_not_found off;
+        }
+
+{% if enable_basic_status == 'yes' %}
+        location = /basic_status {
+                stub_status;
+{% if allow_basic_status_subnet is defined %}
+                allow {{ allow_basic_status_subnet }};
+        deny all;
+{% endif %}
+        }
+{% endif %}
+{% if php_fpm.monitoring == 'yes' %}
+        location /{{ php_fpm.location }} {
+        include fastcgi_params;
+        fastcgi_pass   {{ php_fpm.fastcgi_pass }};
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+}
+{% endif %}
+}

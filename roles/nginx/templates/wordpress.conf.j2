@@ -1,12 +1,7 @@
-upstream php {
-        server unix:/tmp/php-cgi.socket;
-        server 127.0.0.1:9000;
-}
-
 server {
-        listen {{ nginx_port }};
+        listen {{ http_port }};
         server_name {{ domain_name }};
-        root {{ root_directory }};
+        root {{ root_dir }};
         index index.php;
 
         location = /favicon.ico {
@@ -27,7 +22,7 @@ server {
         location ~ \.php$ {
                 include fastcgi_params;
                 fastcgi_intercept_errors on;
-                fastcgi_pass php;
+                fastcgi_pass {{ php_fpm.fastcgi_pass }};
                 #The following parameter can be also included in fastcgi_params file
                 fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
         }

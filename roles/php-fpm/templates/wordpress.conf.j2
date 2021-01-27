@@ -1,0 +1,69 @@
+[wordpress]
+user = {{ pool.user | default('apache') }}
+group = {{ pool.group | default('apache') }}
+listen = {{ pool.listen }}
+
+;listen.backlog = 511
+
+;listen.owner = {{ pool.listen_owner | default('nobody') }}
+;listen.group = {{ pool.listen_group | default('nobody') }}
+;listen.mode = {{ pool.listen_mode |default(0660) }}
+
+;listen.acl_users = apache,nginx
+;listen.acl_groups =
+
+listen.allowed_clients = {{ pool.listen_allowed_clients | default('127.0.0.1') }}
+process.priority = {{ pool.process_priority | default(-19) }}
+process.dumpable = {{ pool.process_dumpable | default('no') }}
+
+pm = {{ pool.pm }}
+pm.max_children = {{ pool.pm_max_children | default(50) }}
+
+; Default Value: min_spare_servers + (max_spare_servers - min_spare_servers) / 2
+{% if pool.pm == 'dynamic' %}
+pm.start_servers = {{ pool.pm_start_servers | default(5) }}
+pm.min_spare_servers = {{ pool.pm_min_spare_servers | default(5) }}
+pm.max_spare_servers = {{ pool.pm.max_spare_servers | default(35) }}
+{% endif %}
+
+{% if pool.pm == 'ondemand' %}
+pm.process_idle_timeout = {{ pool.pm_process_idle_timeout | default('10s') }};
+{% endif %}
+
+pm.max_requests = {{ pool.pm_max_requests | default(0) }}
+
+{% if pool.pm_status_path is defined %}
+pm.status_path = /{{ pool.pm_status_path | default('status') }}
+ping.path = /{{ pool.ping_path | default('ping') }}
+ping.response = {{ pool.ping_response | default('pong') }}
+{% endif %}
+{% if pool.access_log is defined %}
+access.log = {{ pool.access_log | default('log') }}/$pool.access.log
+access.format = "{{ pool.access_format }}"
+slowlog = {{ pool.slowlog }}
+request_slowlog_timeout = 0
+{% endif %}
+
+request_terminate_timeout = {{ pool.request_terminate_timeout | default(0) }}
+
+rlimit_files = {{ pool.rlimit_files | default(1024) }}
+;rlimit_core = {{ pool.rlimit_core | default(0) }}
+;chroot =
+;chdir = /var/www
+;catch_workers_output = yes
+;clear_env = no
+;security.limit_extensions = .php .php3 .php4 .php5 .php7
+;env[HOSTNAME] = $HOSTNAME
+;env[PATH] = /usr/local/bin:/usr/bin:/bin
+;env[TMP] = /tmp
+;env[TMPDIR] = /tmp
+;env[TEMP] = /tmp
+;php_admin_value[sendmail_path] = /usr/sbin/sendmail -t -i -f www@my.domain.com
+;php_flag[display_errors] = off
+php_admin_value[error_log] = /var/log/php-fpm/www-error.log
+php_admin_flag[log_errors] = on
+;php_admin_value[memory_limit] = 128M
+php_value[session.save_handler] = files
+php_value[session.save_path]    = /var/lib/php/session
+php_value[soap.wsdl_cache_dir]  = /var/lib/php/wsdlcache
+;php_value[opcache.file_cache]  = /var/lib/php/opcache

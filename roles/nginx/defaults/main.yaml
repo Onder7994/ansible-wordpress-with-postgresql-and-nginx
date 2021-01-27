@@ -1,0 +1,59 @@
+php_fpm:
+  monitoring: "yes"
+  location: "phpfpm-status"
+  fastcgi_pass: "127.0.0.1:9000"
+ssl:
+  usage: "yes"
+  enable_redirect: "yes"
+  ssl_port: "443"
+  ssl_certificate: "/etc/nginx/ssl"
+  ssl_certificate_key: "/etc/nginx/ssl"
+  ssl_certificate_name: "cert.crt"
+  ssl_certificate_key_name: "cert.key" 
+  ssl_conf_dir: "/etc/nginx"
+  ssl_session_cache: "shared:SSL:20m"
+  ssl_session_timeout: "1d"
+  ssl_prefer_server_ciphers: "on"
+  ssl_protocols: |
+   TLSv1 TLSv1.1 TLSv1.2
+  ssl_ciphers: "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH"
+  ssl_buffer_size: "8k"
+  ssl_stapling: "on"
+  resolver: "8.8.8.8"
+  ssl_stapling_verify: "on"
+enable_basic_status: "yes"
+allow_basic_status_subnet: "192.168.0.0/24"
+domain_name: "domain_name"
+http_port: "80"
+root_dir: "/usr/share/nginx/html"
+general:
+  execute_user_nginx: "nginx"
+  worker_processes: "auto"
+  multi_accept: "on"
+logs:
+  error_log_dir: "/var/log/nginx/error.log"
+  error_log_level: "crit"
+  access_log_dir: "/var/log/nginx/access.log"
+  access_log_level: "main"
+sendfile: "on"
+tcp_nodelay: "on"
+tcp_nopush: "on"
+cache:
+  open_file_cache_max: "200000"
+  open_file_cache_inactive: "20s"
+  open_file_cache_valid: "30s"
+  open_file_cache_min_uses: "50"
+  open_file_cache_errors: "off"
+gzip_setting:
+  gzip: "on"
+  gzip_disable: "msie6"
+  gzip_types: |
+   text/plain, text/css, application/json ,application/x-javascript, text/xml, application/xml, application/xml+rss, text/javascript, application/javascript
+keepalive:
+  keepalive_timeout: "100"
+  keepalive_requests: "100"
+client:
+  reset_timedout_connection: "on"
+  client_body_timeout: "60"
+  send_timeout: "10"
+  client_max_body_size: "256m"
