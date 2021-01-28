@@ -2,6 +2,7 @@ php_fpm:
   monitoring: "yes"
   location: "phpfpm-status"
   fastcgi_pass: "127.0.0.1:9000"
+  ping_path: "ping"
 ssl:
   usage: "no"
   enable_redirect: "yes"
